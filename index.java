@@ -21,6 +21,31 @@ const int servoPin = D2;      // Servo motor pin
 // Flag to track the rain state
 bool isRaining = false;
 
+void setup() {
+  Serial.begin(115200);
+  pinMode(rainSensorPin, INPUT);
+  pinMode(BUZZER_PIN, OUTPUT);
+
+  // Attach the servo to the designated pin
+  windowServo.attach(servoPin);
+  windowServo.write(0);  // Initialize servo to open position (0 degrees)
+
+  // Connect to Wi-Fi
+  Serial.print("Connecting to Wi-Fi");
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("Connected!");
+
+  // Initialize Firebase connection
+  Firebase.begin(FIREBASE_HOST, FIREBASE_AUTH);
+  Firebase.reconnectWiFi(true);
+
+  Serial.println("Firebase initialized.");
+}
+
 void loop() {
   int rainStatus = digitalRead(rainSensorPin);  // Read rain sensor data (1 = no rain, 0 = rain)
 
